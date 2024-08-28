@@ -1,0 +1,39 @@
+Vivado Simulator 2019.2
+Time resolution is 1 ps
+Time = 0 | clk = 0 | rst = 1 | T = 1000
+Time = 5000 | clk = 1 | rst = 1 | T = 1000
+Time = 10000 | clk = 0 | rst = 1 | T = 1000
+Time = 15000 | clk = 1 | rst = 1 | T = 1000
+Time = 20000 | clk = 0 | rst = 0 | T = 1000
+Time = 25000 | clk = 1 | rst = 0 | T = 0100
+Time = 30000 | clk = 0 | rst = 0 | T = 0100
+Time = 35000 | clk = 1 | rst = 0 | T = 0010
+Time = 40000 | clk = 0 | rst = 0 | T = 0010
+Time = 45000 | clk = 1 | rst = 0 | T = 0001
+Time = 50000 | clk = 0 | rst = 0 | T = 0001
+Time = 55000 | clk = 1 | rst = 0 | T = 1000
+Time = 60000 | clk = 0 | rst = 0 | T = 1000
+Time = 65000 | clk = 1 | rst = 0 | T = 0100
+Time = 70000 | clk = 0 | rst = 0 | T = 0100
+Time = 75000 | clk = 1 | rst = 0 | T = 0010
+Time = 80000 | clk = 0 | rst = 0 | T = 0010
+Time = 85000 | clk = 1 | rst = 0 | T = 0001
+Time = 90000 | clk = 0 | rst = 0 | T = 0001
+Time = 95000 | clk = 1 | rst = 0 | T = 1000
+Time = 100000 | clk = 0 | rst = 0 | T = 1000
+Time = 105000 | clk = 1 | rst = 0 | T = 0100
+Time = 110000 | clk = 0 | rst = 0 | T = 0100
+Time = 115000 | clk = 1 | rst = 0 | T = 0010
+Time = 120000 | clk = 0 | rst = 1 | T = 1000
+Time = 125000 | clk = 1 | rst = 1 | T = 1000
+Time = 130000 | clk = 0 | rst = 0 | T = 1000
+Time = 135000 | clk = 1 | rst = 0 | T = 0100
+Time = 140000 | clk = 0 | rst = 0 | T = 0100
+Time = 145000 | clk = 1 | rst = 0 | T = 0010
+Time = 150000 | clk = 0 | rst = 0 | T = 0010
+Time = 155000 | clk = 1 | rst = 0 | T = 0001
+Time = 160000 | clk = 0 | rst = 0 | T = 0001
+Time = 165000 | clk = 1 | rst = 0 | T = 1000
+Time = 170000 | clk = 0 | rst = 0 | T = 1000
+Time = 175000 | clk = 1 | rst = 0 | T = 0100
+$finish called at time : 180 ns : File "E:/code/verilog/lab1/beat_generate/project_2/project_2.srcs/sim_1/new/beat_generate_tb.v" Line 63

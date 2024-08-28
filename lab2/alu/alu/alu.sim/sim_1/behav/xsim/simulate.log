@@ -1,0 +1,19 @@
+Vivado Simulator 2019.2
+Time resolution is 1 ps
+Time = 0 | A = 00000001 | B = 00000001 | Cin = 0 | Card = 00001 | F = 00000002 | Cout = 0 | Zero = 0
+Time = 10000 | A = 00000001 | B = 00000001 | Cin = 1 | Card = 00010 | F = 00000003 | Cout = 0 | Zero = 0
+Time = 20000 | A = 00000002 | B = 00000001 | Cin = 0 | Card = 00011 | F = 00000001 | Cout = 0 | Zero = 0
+Time = 30000 | A = 00000002 | B = 00000001 | Cin = 1 | Card = 00100 | F = 00000000 | Cout = 0 | Zero = 1
+Time = 40000 | A = 00000001 | B = 00000002 | Cin = 0 | Card = 00101 | F = 00000001 | Cout = 0 | Zero = 0
+Time = 50000 | A = 00000001 | B = 00000002 | Cin = 1 | Card = 00110 | F = 00000000 | Cout = 0 | Zero = 1
+Time = 60000 | A = ffffffff | B = 00000002 | Cin = 1 | Card = 00111 | F = ffffffff | Cout = 0 | Zero = 0
+Time = 70000 | A = ffffffff | B = 0000000f | Cin = 1 | Card = 01000 | F = 0000000f | Cout = 0 | Zero = 0
+Time = 80000 | A = aaaaaaaa | B = 0000000f | Cin = 1 | Card = 01001 | F = 55555555 | Cout = 0 | Zero = 0
+Time = 90000 | A = aaaaaaaa | B = 55555555 | Cin = 1 | Card = 01010 | F = aaaaaaaa | Cout = 0 | Zero = 0
+Time = 100000 | A = f0f0f0f0 | B = 0f0f0f0f | Cin = 1 | Card = 01011 | F = ffffffff | Cout = 0 | Zero = 0
+Time = 110000 | A = ff00ff00 | B = 00ff00ff | Cin = 1 | Card = 01100 | F = 00000000 | Cout = 0 | Zero = 1
+Time = 120000 | A = aaaa5555 | B = 5555aaaa | Cin = 1 | Card = 01101 | F = 00000000 | Cout = 0 | Zero = 1
+Time = 130000 | A = 12345678 | B = 87654321 | Cin = 1 | Card = 01110 | F = 95511559 | Cout = 0 | Zero = 0
+Time = 140000 | A = ffffffff | B = 00000000 | Cin = 1 | Card = 01111 | F = ffffffff | Cout = 0 | Zero = 0
+Time = 150000 | A = ffffffff | B = 00000000 | Cin = 1 | Card = 10000 | F = 00000000 | Cout = 0 | Zero = 1
+$finish called at time : 160 ns : File "E:/code/verilog/lab2/alu/alu/alu.srcs/sim_1/new/alu_tb.v" Line 166
