@@ -1,0 +1,7 @@
+lab1/
+lab1/**
+lab2/
+lab2/**
+
+!lab1/beat_generate/project_2/
+!lab1/beat_generate/project_2/**
