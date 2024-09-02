@@ -1,0 +1,9 @@
+0.6
+2019.2
+Nov  6 2019
+21:57:16
+E:/code/verilog/lab3/ram_reg/project_1/project_1.sim/sim_1/behav/xsim/glbl.v,1573089660,verilog,,,,glbl,,,,,,,,
+,,,,,,top_module_tb,,,,,,,,
+E:/code/verilog/lab3/ram_reg/project_1/project_1.srcs/sources_1/new/bram_top.v,1725258917,verilog,,E:/code/verilog/lab3/ram_reg/project_1/project_1.srcs/sources_1/new/regfile.v,,bram_top,,,,,,,,
+,,,,E:/code/verilog/lab3/ram_reg/project_1/project_1.srcs/sources_1/new/top_module.v,,regfile,,,,,,,,
+,,,,E:/code/verilog/lab3/ram_reg/project_1/project_1.srcs/sim_1/new/top_module_tb.v,,top_module,,,,,,,,

@@ -2,12 +2,12 @@
 # Webtalk v2019.2 (64-bit)
 # SW Build 2708876 on Wed Nov  6 21:40:23 MST 2019
 # IP Build 2700528 on Thu Nov  7 00:09:20 MST 2019
-# Start of session at: Thu Aug 29 20:56:10 2024
-# Process ID: 30404
+# Start of session at: Mon Sep  2 14:48:09 2024
+# Process ID: 12548
 # Current directory: E:/code/verilog/lab3/reg/regfile/regfile.sim/sim_1/behav/xsim
 # Command line: wbtcv.exe -mode batch -source E:/code/verilog/lab3/reg/regfile/regfile.sim/sim_1/behav/xsim/xsim.dir/regfile_tb_behav/webtalk/xsim_webtalk.tcl -notrace
 # Log file: E:/code/verilog/lab3/reg/regfile/regfile.sim/sim_1/behav/xsim/webtalk.log
 # Journal file: E:/code/verilog/lab3/reg/regfile/regfile.sim/sim_1/behav/xsim\webtalk.jou
 #-----------------------------------------------------------
 source E:/code/verilog/lab3/reg/regfile/regfile.sim/sim_1/behav/xsim/xsim.dir/regfile_tb_behav/webtalk/xsim_webtalk.tcl -notrace
-INFO: [Common 17-206] Exiting Webtalk at Thu Aug 29 20:56:11 2024...
+INFO: [Common 17-206] Exiting Webtalk at Mon Sep  2 14:48:10 2024...

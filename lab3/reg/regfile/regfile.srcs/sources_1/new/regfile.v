@@ -32,6 +32,12 @@ module regfile (
 );
     reg [31:0] registers [31:0];
 
+    integer i;
+    initial begin
+        for (i = 0; i < 32; i = i + 1) begin
+            registers[i] = 32'b0;
+        end
+    end
     // Read ports
     assign rdata1 = registers[raddr1];
     assign rdata2 = registers[raddr2];

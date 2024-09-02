@@ -1,24 +1,4 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 2024/08/29 20:35:27
-// Design Name: 
-// Module Name: regfile_tb
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
-
 
 module regfile_tb;
 
@@ -53,36 +33,35 @@ module regfile_tb;
     // Test sequence
     initial begin
         // Initialize signals
-        we = 0; raddr1 = 0; raddr2 = 0; waddr = 0; wdata = 0;
+        we = 1; raddr1 = 5'b0; raddr2 = 5'b0; waddr = 5'b0; wdata = 32'b0;
+
+        // Wait for a few clock cycles to ensure initialization
+        #15;
 
         // Write data to register 1
-        #10;
         we = 1; waddr = 5'd1; wdata = 32'hA5A5A5A5;
-        #10;
+        #10; // Wait for one clock cycle
 
         // Write data to register 2
         we = 1; waddr = 5'd2; wdata = 32'h5A5A5A5A;
-        #10;
+        #10; // Wait for one clock cycle
 
-        // Disable write enable
+        // Disable write enable after writing
         we = 0;
 
         // Read data from register 1
-        #10;
         raddr1 = 5'd1;
-        #10;
+        #10; // Wait for one clock cycle to allow read data to stabilize
         $display("Read data1 from register 1: %h (Expected: A5A5A5A5)", rdata1);
 
         // Read data from register 2
-        #10;
         raddr2 = 5'd2;
-        #10;
+        #10; // Wait for one clock cycle to allow read data to stabilize
         $display("Read data2 from register 2: %h (Expected: 5A5A5A5A)", rdata2);
 
         // Read data from register 0 (should be 0 as it's never written)
-        #10;
         raddr1 = 5'd0;
-        #10;
+        #10; // Wait for one clock cycle to allow read data to stabilize
         $display("Read data1 from register 0: %h (Expected: 00000000)", rdata1);
 
         // End simulation
