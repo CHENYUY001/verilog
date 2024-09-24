@@ -1,9 +1,0 @@
-Vivado Simulator 2019.2
-Time resolution is 1 ps
-Time = 0 | A = 00000000 | B = 00000000 | Cin = 0 | F = 00000000 | Cout = 0
-Time = 10000 | A = 00000001 | B = 00000001 | Cin = 0 | F = 00000002 | Cout = 0
-Time = 20000 | A = 00000001 | B = 00000001 | Cin = 1 | F = 00000003 | Cout = 0
-Time = 30000 | A = ffffffff | B = 00000001 | Cin = 0 | F = 00000000 | Cout = 1
-Time = 40000 | A = ffffffff | B = ffffffff | Cin = 0 | F = fffffffe | Cout = 1
-Time = 50000 | A = ffffffff | B = ffffffff | Cin = 1 | F = ffffffff | Cout = 1
-$finish called at time : 60 ns : File "E:/code/verilog/lab2/adder_32bit/adder_32bit/adder_32bit.srcs/sim_1/new/adder_32bit_tb.v" Line 83

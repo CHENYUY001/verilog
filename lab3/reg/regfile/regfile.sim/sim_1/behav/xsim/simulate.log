@@ -1,6 +1,0 @@
-Vivado Simulator 2019.2
-Time resolution is 1 ps
-Read data1 from register 1: a5a5a5a5 (Expected: A5A5A5A5)
-Read data2 from register 2: 5a5a5a5a (Expected: 5A5A5A5A)
-Read data1 from register 0: 00000000 (Expected: 00000000)
-$finish called at time : 75 ns : File "E:/code/verilog/lab3/reg/regfile/regfile.srcs/sim_1/new/regfile_tb.v" Line 69

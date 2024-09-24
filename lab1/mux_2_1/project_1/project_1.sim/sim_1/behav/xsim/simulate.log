@@ -1,8 +1,0 @@
-Vivado Simulator 2019.2
-Time resolution is 1 ps
-Time = 0 | d0 = 00 | d1 = 11 | select = 0 | out = 11
-Time = 10000 | d0 = 01 | d1 = 10 | select = 0 | out = 10
-Time = 20000 | d0 = 01 | d1 = 10 | select = 1 | out = 01
-Time = 30000 | d0 = 10 | d1 = 01 | select = 0 | out = 01
-Time = 40000 | d0 = 10 | d1 = 01 | select = 1 | out = 10
-$finish called at time : 50 ns : File "E:/code/verilog/lab1/mux_2_1/project_1/project_1.srcs/sim_1/new/mux_2_1_tb.v" Line 62
