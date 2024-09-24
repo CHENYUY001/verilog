@@ -192,6 +192,10 @@ Compiling module dist_mem_gen_v8_0_13.dist_mem_gen_v8_0_13(C_FAMILY="a...
 Compiling module xil_defaultlib.cpu_inst_rom
 Compiling module dist_mem_gen_v8_0_13.dist_mem_gen_v8_0_13(C_FAMILY="a...
 Compiling module xil_defaultlib.cpu_data_ram
+Compiling module xil_defaultlib.PC_select
+Compiling module xil_defaultlib.cpu_decoder
+Compiling module xil_defaultlib.Reg_
+Compiling module xil_defaultlib.alu_
 Compiling module xil_defaultlib.cpu
 Compiling module dist_mem_gen_v8_0_13.dist_mem_gen_v8_0_13(C_FAMILY="a...
 Compiling module xil_defaultlib.cpu_ans_rom

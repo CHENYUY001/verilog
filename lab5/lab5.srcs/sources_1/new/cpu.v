@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 2024/09/09 14:42:14
+// Create Date: 2024/09/24 19:30:30
 // Design Name: 
 // Module Name: cpu
 // Project Name: 
@@ -20,195 +20,344 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
+`define ADD_1   5'b00001
+`define ADD_2   5'b00010
+`define SUB_1   5'b00011
+`define SUB_2   5'b00100
+`define SUB_3   5'b00101
+`define SUB_4   5'b00110
+`define EQA     5'b00111
+`define EQB     5'b01000
+`define NOTA    5'b01001
+`define NOTB    5'b01010
+`define OR      5'b01011
+`define AND     5'b01100    
+`define SOR     5'b01101
+`define NOR     5'b01110
+`define ANDNOT  5'b01111
+`define ZERO    5'b10000
+
 module cpu(
-    input           clk,                // 时钟信号
-    input           resetn,             // 低有效复位信号
+    input           clk,               
+    input           resetn,            
 
-    output          inst_sram_en,       // 指令存储器读使能
-    output [31:0]   inst_sram_addr,     // 指令存储器读地址
-    input [31:0]    inst_sram_rdata,    // 指令存储器读出的数据
+    output          inst_sram_en,       
+    output[31:0]    inst_sram_addr,     
+    input[31:0]     inst_sram_rdata, 
 
-    output          data_sram_en,       // 数据存储器端口读/写使能
-    output [3:0]    data_sram_wen,      // 数据存储器写使能      
-    output [31:0]   data_sram_addr,     // 数据存储器读/写地址
-    output [31:0]   data_sram_wdata,    // 写入数据存储器的数据
-    input [31:0]    data_sram_rdata,    // 数据存储器读出的数据
+    output          data_sram_en,      
+    output[3:0]     data_sram_wen,    
+    output[31:0]    data_sram_addr,   
+    output[31:0]    data_sram_wdata,  
+    input[31:0]     data_sram_rdata,  
 
-    // 供自动测试环境进行CPU正确性检查
-    output [31:0]   debug_wb_pc,        // 当前正在执行指令的PC
-    output          debug_wb_rf_wen,    // 当前通用寄存器组的写使能信号
-    output [4:0]    debug_wb_rf_wnum,   // 当前通用寄存器组写回的寄存器编号
-    output [31:0]   debug_wb_rf_wdata   // 当前指令需要写回的数据
+    output[31:0]    debug_wb_pc,       
+    output          debug_wb_rf_wen,
+    output[4:0]     debug_wb_rf_wnum,
+    output[31:0]    debug_wb_rf_wdata 
 );
 
-    // 定义 CPU 内部信号
-    reg [31:0] pc;  // 程序计数器
-    reg [31:0] next_pc;
-    reg [31:0] regfile [31:0];  // 寄存器堆
-    reg [31:0] alu_out;  // ALU 输出
-    reg [31:0] write_data;  // 写入寄存器堆的数据
-    reg [31:0] instruction;  // 当前指令
-    reg [31:0] mem_rdata;  // 从数据存储器读出的数据
-
-    // 寄存器控制信号
-    reg [4:0] rs, rt, rd;
-    reg [15:0] imm;
-    reg [5:0] funct;
-    reg [5:0] opcode;
-    reg [31:0] sign_ext_imm;
-    reg [31:0] branch_target;
-    
-    // 控制信号
-    reg alu_src, reg_dst, mem_to_reg, reg_write, mem_read, mem_write, branch, jump;
-    reg [4:0] alu_control;
-
-    // 初始化寄存器和信号
-    integer i;
-    always @(posedge clk or negedge resetn) begin
-        if (!resetn) begin
-            pc <= 32'h00000000;
-            for (i = 0; i < 32; i = i + 1) begin
-                regfile[i] <= 32'b0;
+    reg[3:1] T;
+    always @(posedge clk ) begin 
+            if (!resetn) begin
+                T <= 3'b100;
+            end else begin
+                T <= {T[2:1], T[3]};
             end
-        end else begin
-            pc <= next_pc;
-            if (reg_write && debug_wb_rf_wnum != 5'b0) begin
-                regfile[debug_wb_rf_wnum] <= write_data;
-            end
-        end
     end
+    assign inst_sram_en = T[3];
 
-    // 指令存储器访问
-    assign inst_sram_en = 1'b1;
+    (*mark_debug = "true"*)wire[31:0] inst;
+    assign inst = inst_sram_rdata;
+    wire[25:0] jmp_part = inst[25:0];
+    wire[15:0] bbt_part = inst[15:0];
+    wire[1:0] sel;
+    wire[31:0] pc;
+
+    PC_select PC_select(
+        .clk(clk),
+        .T(T[1]),
+        .resetn(resetn),
+        .sel(sel),
+        .jmp_part(jmp_part),
+        .bbt_part(bbt_part),
+        .pc_val(pc)
+    );
+
     assign inst_sram_addr = pc;
+    reg[31:0] pc_keep;
     always @(posedge clk) begin
-        instruction <= inst_sram_rdata;  // 取指令
-    end
-
-    // 从指令中提取字段
-    always @(*) begin
-        opcode = instruction[31:26];
-        rs = instruction[25:21];
-        rt = instruction[20:16];
-        rd = instruction[15:11];
-        imm = instruction[15:0];
-        funct = instruction[5:0];
-        sign_ext_imm = {{16{imm[15]}}, imm};  // 符号扩展
-        branch_target = (sign_ext_imm << 2) + pc + 4;
-    end
-
-    // ALU 和控制单元
-    always @(*) begin
-        case (opcode)
-            6'b000000: begin  // R型指令
-                case (funct)
-                    6'b100000: begin  // ADD
-                        alu_control = 5'b00001;
-                        alu_src = 0;
-                        reg_dst = 1;
-                        reg_write = 1;
-                    end
-                    6'b100010: begin  // SUB
-                        alu_control = 5'b00011;
-                        alu_src = 0;
-                        reg_dst = 1;
-                        reg_write = 1;
-                    end
-                    6'b100100: begin  // AND
-                        alu_control = 5'b01100;
-                        alu_src = 0;
-                        reg_dst = 1;
-                        reg_write = 1;
-                    end
-                    6'b100101: begin  // OR
-                        alu_control = 4'b01011;
-                        alu_src = 0;
-                        reg_dst = 1;
-                        reg_write = 1;
-                    end
-                    6'b100110: begin  // XOR
-                        alu_control = 5'b01110;
-                        alu_src = 0;
-                        reg_dst = 1;
-                        reg_write = 1;
-                    end
-                    default: begin
-                        alu_control = 5'b11111;  // 无效操作
-                    end
-                endcase
+        if (T[3])
+            begin 
+            pc_keep = pc;
             end
-            6'b100011: begin  // LW 指令
-                alu_control = 5'b00001;  // ALU 做加法计算地址
-                alu_src = 1;  // ALU 第二个操作数是立即数（偏移量）
-                reg_dst = 0;  // 写回寄存器为rt
-                reg_write = 1;  // 使能写回寄存器
-                mem_read = 1;  // 读取数据存储器
-            end 
-            6'b101011: begin  // SW
-                alu_control = 5'b00001;
-                alu_src = 1;
-                mem_write = 1;
-                reg_write = 0;
-            end
-            6'b000100: begin  // BEQ
-                alu_control = 5'b00011;  // SUB
-                alu_src = 0;
-                branch = 1;
-            end
-            6'b000010: begin  // J
-                jump = 1;
-            end
-            default: begin
-                alu_control = 5'b11111;  // 无效操作
-            end
-        endcase
+        if (!resetn) pc_keep = 0;
     end
+    assign debug_wb_pc = pc_keep;
 
-    // ALU 计算
-    always @(*) begin
-        case (alu_control)
-            5'b00001: alu_out = regfile[rs] + (alu_src ? sign_ext_imm : regfile[rt]);  // 加法
-            5'b00011: alu_out = regfile[rs] - regfile[rt];  // 减法
-            5'b01100: alu_out = regfile[rs] & regfile[rt];  // AND
-            5'b01011: alu_out = regfile[rs] | regfile[rt];  // OR
-            5'b01110: alu_out = regfile[rs] ^ regfile[rt];  // XOR
-            default: alu_out = 32'b0;  // 默认值
-        endcase
-    end
+    wire wen;
+    wire[4:0] waddr;
+    wire[4:0] raddr1;
+    wire[4:0] raddr2;
+    wire[4:0] alu_card;
+    wire mem_rd;
+    wire mem_wr;
+    wire jmp;
+    wire mov;
+    wire sll;
+    wire cmp;
+    wire bbt;
+    (*mark_debug = "true"*)wire reg_wen;
+    assign data_sram_wen = mem_wr;
+    assign data_sram_en = mem_wr | mem_rd;
+    wire[31:0] rs_data;
+    wire[31:0] rt_data;   
+    wire[31:0] wb_data;
+    assign sel = (jmp)?2'b01:(bbt&rs_data[inst[20:16]])?2'b10:2'b00;
+    assign reg_wen = (wen&mov)? (!rt_data):wen;
 
-    // 数据存储器访问
-    assign data_sram_en = mem_read | mem_write;
-    assign data_sram_wen = mem_write ? 5'b11111 : 5'b00000;
-    assign data_sram_addr = alu_out;
-    assign data_sram_wdata = regfile[rt];
-    always @(posedge clk) begin
-        if (mem_read) begin
-            mem_rdata <= data_sram_rdata;  // 从数据存储器读取的数据
-        end  // 从存储器读取的数据
-    end
+    cpu_decoder cpu_decoder(
+        .inst(inst),
+        .resetn(resetn),
+        .wen(wen),
+        .waddr(waddr),
+        .raddr1(raddr1),
+        .raddr2(raddr2),
+        .alu_card(alu_card),
+        .mem_rd(mem_rd),
+        .mem_wr(mem_wr),
+        .jmp(jmp),
+        .mov(mov),
+        .sll(sll),
+        .cmp(cmp),
+        .bbt(bbt)
+    );
 
-    // 写回阶段
-    always @(*) begin
-        if (mem_to_reg)
-            write_data = mem_rdata;  // 来自内存
-        else
-            write_data = alu_out;  // 来自 ALU
-    end
+    Reg_ Reg_(
+        .clk(clk),
+        .resetn(resetn),
+        .T3(T[3]),
+        .raddr1(raddr1),
+        .raddr2(raddr2),
+        .we(reg_wen),
+        .waddr(waddr),
+        .wdata(wb_data),
+        .rdata1(rs_data),
+        .rdata2(rt_data)
+    );
 
-    // 跳转和分支
-    always @(*) begin
-        if (jump)
-            next_pc = {pc[31:28], instruction[25:0], 2'b00};
-        else if (branch && alu_out == 32'b0)
-            next_pc = branch_target;
-        else
-            next_pc = pc + 4;
-    end
+    wire[31:0] alu_res;
+    wire zero;
+    wire Cout;
+    alu_ alu_(
+        .A(rs_data),
+        .B(rt_data),
+        .Cin(1'b0),
+        .Card(alu_card),
+        .F(alu_res),
+        .Cout(Cout),
+        .Zero(zero)
+    );
 
-    // 调试信号
-    assign debug_wb_pc = pc;
-    assign debug_wb_rf_wen = reg_write;
-    assign debug_wb_rf_wnum = reg_dst ? rd : rt;
-    assign debug_wb_rf_wdata = write_data;
+    wire[31:0] cmp_res;
+    wire[31:0] sll_res;
+    assign sll_res = rt_data<<inst[10:6];
+    assign cmp_res[0] = (rs_data == rt_data)?1'b1:1'b0;
+    assign cmp_res[1] = ($signed(rs_data)-$signed(rt_data) < 0)?1'b1:1'b0;
+    assign cmp_res[3] = ($signed(rs_data)-$signed(rt_data) <= 0)?1'b1:1'b0;
+    assign cmp_res[2] = (rs_data < rt_data)?1'b1:1'b0;
+    assign cmp_res[4] = (rs_data <= rt_data)?1'b1:1'b0;
+    assign cmp_res[9:5] = ~cmp_res[4:0];
+    assign cmp_res[31:10] = 0;
+
+    assign wb_data = cmp ? cmp_res:
+    sll ? sll_res:
+    (mov & zero) ? rs_data:
+    mem_rd?data_sram_rdata:
+    alu_res;
+
+    assign data_sram_addr = rs_data+{{16{inst[15]}},inst[15:0]};
+    assign data_sram_wdata = alu_res;
+    assign debug_wb_rf_wdata = wb_data;
+    assign debug_wb_rf_wen = ((waddr!=0)&reg_wen) & T[3];
+    assign debug_wb_rf_wnum = waddr;
+endmodule
+
+module alu_ (
+    input  [31:0]   A,
+    input  [31:0]   B,
+    input           Cin,
+    input  [4:0]    Card,
+
+    output [31:0]   F,
+    output          Cout,
+    output          Zero
+);
+
+    wire [31:0]    add1_result;
+    wire [31:0]    add2_result;
+    wire [31:0]    sub1_result;
+    wire [31:0]    sub2_result;
+    wire [31:0]    sub3_result;
+    wire [31:0]    sub4_result;
+    wire [31:0]    and_result;
+    wire [31:0]    or_result;
+    wire [31:0]    sor_result;
+    wire [31:0]    nor_result;
+    wire [31:0]    andnot_result;
+    wire flag1, flag2;
+
+    assign {flag1, add1_result}  = A + B;
+    assign {flag2, add2_result}  = A + B + Cin;
+
+    assign sub1_result  = A - B;
+    assign sub2_result  = A - B - Cin;
+    assign sub3_result  = B - A;
+    assign sub4_result  = B - A - Cin;
+
+    assign and_result  = A & B;
+    assign or_result  = A | B;
+    assign sor_result  = ~(A ^ B);
+    assign nor_result  = A ^ B;
+    assign andnot_result  = ~(A & B);
+
+    assign F =   ({32{Card == `ADD_1}}  & add1_result )  |
+                 ({32{Card == `ADD_2}}  & add2_result)  |
+                 ({32{Card == `SUB_1}}  & sub1_result)  |
+                 ({32{Card == `SUB_2}} & sub2_result) |
+                 ({32{Card == `SUB_3}}  & sub3_result)  |
+                 ({32{Card == `SUB_4}} & sub4_result) |
+                 ({32{Card == `EQA}}  & A)  |
+                 ({32{Card == `EQB}} & B) |
+                 ({32{Card == `NOTA}}  & ~A)  |
+                 ({32{Card == `NOTB}} & ~B) |
+                 ({32{Card == `AND}}  & and_result)  |
+                 ({32{Card == `OR}} & or_result) |
+                 ({32{Card == `SOR}} & sor_result) |
+                 ({32{Card == `NOR}} & nor_result) |  
+                 ({32{Card == `ANDNOT}} & andnot_result);         
+
+    assign Cout = ({32{Card == `ADD_1}}  & flag1) |
+                  ({32{Card == `ADD_2}}  & flag2);
+    assign Zero = (F == 32'b0);
 
 endmodule
+
+module cpu_decoder (
+    input[31:0]     inst,
+    input           resetn,
+    output          wen,
+    output[4:0]     waddr,
+    output[4:0]     raddr1,
+    output[4:0]     raddr2,
+    output[4:0]     alu_card,
+    output          mem_rd,
+    output          mem_wr,
+    output          jmp,
+    output          mov,
+    output          sll,
+    output          cmp,
+    output          bbt
+);
+
+    reg flag;
+    wire [4:0] rs, rt, rd;
+    assign rs = inst[25:21];
+    assign rt = inst[20:16];
+    assign rd = inst[15:11];
+    reg [12:1]inst_flag;
+    wire [16:0] inst_part;
+    assign inst_part = {inst[31:26],inst[10:0]};
+
+    always @(*) begin
+        if (!resetn) inst_flag = 0;
+        flag = 0;
+        casez(inst_part)
+            17'b00000000000100000: inst_flag = 12'b000000000001;
+            17'b00000000000100010: inst_flag = 12'b000000000010;
+            17'b00000000000100100: inst_flag = 12'b000000000100;
+            17'b00000000000100101: inst_flag = 12'b000000001000;
+            17'b00000000000100110: inst_flag = 12'b000000010000;
+            17'b101011???????????: inst_flag = 12'b000000100000;
+            17'b100011???????????: inst_flag = 12'b000001000000;
+            17'b000010???????????: inst_flag = 12'b000010000000;
+            17'b00000000000001010: inst_flag = 12'b000100000000;
+            17'b11111000000000000: inst_flag = 12'b010000000000;
+            17'b111111???????????: inst_flag = 12'b100000000000;
+            17'b000000?????000000: inst_flag = (inst[25:21]==5'b0)?(12'b001000000000):12'b0;
+            default:  flag = 1;
+        endcase
+        if (inst_flag == 12'b0) flag = 1;
+    end
+
+    assign wen = inst_flag[1] | inst_flag[2] | inst_flag[3] | inst_flag[4] | inst_flag[5] | inst_flag[7] | inst_flag[9] | inst_flag[10] | inst_flag[11];
+    assign waddr = ({5{inst_flag[1] | inst_flag[2] | inst_flag[3] | inst_flag[4] | inst_flag[5] | inst_flag[9] | inst_flag[10] | inst_flag[11]}} & rd) |
+                   ({5{inst_flag[7]}} & rt);
+    assign raddr1 = rs;
+    assign raddr2 = rt;
+    assign alu_card = ({5{inst_flag[1]}} & 5'b00001) | ({5{inst_flag[2]}} & 5'b00011) | 
+                      ({5{inst_flag[3]}} & 5'b01100) | ({5{inst_flag[4]}} & 5'b01011) | 
+                      ({5{inst_flag[5]}} & 5'b01110) | ({5{inst_flag[9] | inst_flag[6]}} & 5'b01000) | 
+                      ({5{inst_flag[11]}} & 5'b00111);
+
+    assign mem_rd = inst_flag[7];  
+    assign mem_wr = inst_flag[6];   
+    assign jmp = inst_flag[8];       
+    assign mov = inst_flag[9];          
+    assign sll = inst_flag[10];         
+    assign cmp = inst_flag[11];         
+    assign bbt = inst_flag[12];         
+endmodule
+
+module PC_select (
+    input clk,
+    input T,
+    input resetn,
+    input [1:0] sel,
+    input[25:0] jmp_part,
+    input[15:0] bbt_part,
+    output [31:0] pc_val
+);
+
+    (*mark_debug = "true"*)reg [31:0] pc = 0;
+    assign pc_val = pc;
+    wire[31:0] npc = pc + 4;
+    wire[31:0] jmp_pc = {npc[31:28], jmp_part[25:0], 2'b00};
+    wire[31:0] bbt_pc = ({{16{bbt_part[15]}},bbt_part} << 2) + npc;
+    wire[31:0] pc_res = (sel == 2'b10) ? bbt_pc : (sel == 2'b01) ? jmp_pc : npc;
+
+    always @(posedge clk) begin             
+        if (resetn == 0) 
+            pc <= 32'b0;
+        else if (T) 
+            pc <= pc_res;
+    end
+endmodule
+
+module Reg_(
+    input clk,
+    input T3,
+    input resetn,
+    input [4:0] raddr1,
+    input [4:0] raddr2,
+    input we,
+    input [4:0] waddr,
+    input [31:0] wdata,
+    output [31:0] rdata1,
+    output [31:0] rdata2
+);
+
+    integer i;
+    reg [31:0] Reg[31:0]; 
+    always @(posedge clk) begin
+        if (!resetn)
+            for (i = 0; i < 32; i = i + 1)
+                Reg[i] <= 32'b0;
+        else if (T3 & we)
+            Reg[waddr] <= wdata;
+    end 
+
+    assign rdata1 = Reg[raddr1]; 
+    assign rdata2 = Reg[raddr2];
+endmodule 
+

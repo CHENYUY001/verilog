@@ -1,0 +1,9 @@
+# 忽略所有文件
+*
+
+# 不忽略 .gitignore 本身
+!.gitignore
+
+# 不忽略 project_2.srcs 目录及其所有内容
+!lab1/beat_generate/project_2/project_2.srcs/
+!lab1/beat_generate/project_2/project_2.srcs/**
