@@ -52,9 +52,9 @@ module cpu(
     input[31:0]     data_sram_rdata,  
 
     output[31:0]    debug_wb_pc,       
-    output          debug_wb_rf_wen,
-    output[4:0]     debug_wb_rf_wnum,
-    output[31:0]    debug_wb_rf_wdata 
+    (*mark_debug = "true"*)output          debug_wb_rf_wen,
+    (*mark_debug = "true"*)output[4:0]     debug_wb_rf_wnum,
+    (*mark_debug = "true"*)output[31:0]    debug_wb_rf_wdata
 );
 
     reg[3:1] T;
